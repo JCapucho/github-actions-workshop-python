@@ -1,0 +1,37 @@
+name: Build and test python project
+# Events
+on:
+  # Push to master
+  push:
+    branches: 
+      - 'master'
+  # Manual trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Tipo de VM
+    steps:
+      - name: Checkout repository files
+        uses: actions/checkout@v3
+      # Aqui instalamos o python
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          # Este input é opcional, mas nesse caso a versão não é definida
+          python-version: 3.7 # Aceita semantic versioning como input
+      # Aqui instalamos as dependências do nosso projeto.
+      - name: Install dependencies
+        run: |
+          # Começamos por atualizar o pip, pois nem sempre a versão presente
+          # é a mais recente.
+          python -m pip install --upgrade pip
+          # De seguida instalamos pacotes para correr testes e lints
+          pip install flake8 pytest
+          # Finalmente instalamos as dependências da nossa aplicação
+          # que guardamos num ficheiro requirements.txt
+          pip install -r requirements.txt
+      - name: Lint code 
+        run: flake8 .
+      - name: Run tests
+        run: pytest
