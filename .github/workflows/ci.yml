@@ -1,0 +1,37 @@
+name: Lint and Test python project
+# The `on` object is where we specify the events that trigger our workflow
+on:
+  # Run whenever someone pushes new commits
+  push:
+    # Restrict the `push` event to only specific branches
+    branches:
+      - '2023-2024'
+      - '2023-2024-complete'
+  # Run whenever a pull request is created or updated
+  pull_request:
+  # Allow for manually triggering the workflow
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the project files
+        uses: actions/checkout@v4
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check formatting
+        run: black --check lib
+
+      - name: Run the linter
+        run: flake8 lib
+
+      - name: Run the tests
+        run: pytest
